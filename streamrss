@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+
+use File::stat;
+use Time::localtime;
+
+die "not enough parameters!" if (@ARGV != 5);
+($podurl,$podpath,$prefix,$title,$link)=@ARGV;
+
+opendir(DIR,$podpath);
+@Files=readdir(DIR);
+
+$t=<<there;
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+        <title>$title</title>
+        <link>$link</link>
+        <description>$title</description>
+        <generator>Podcast Generator</generator>
+        <ttl>1440</ttl>
+<!--ITEMS-->
+</channel>
+</rss>
+there
+
+$ITEMS='';
+foreach $filename (@Files){
+next unless ($filename=~/\.mp3$/);
+#print $filename;
+$date_string = ctime(stat("$podpath/$filename")->ctime);
+$ITEMS.=<<here;
+<item>
+        <title>$date_string</title>
+        <link>$link</link>
+        <pubDate>$date_string</pubDate>
+        <category>Radio</category>
+        <category>podcast</category>
+        <description>$date_string</description>
+		  <enclosure url="$podurl$filename" type="audio/mpeg" />
+</item>
+here
+}
+
+$t=~s/<!--ITEMS-->/$ITEMS/;
+
+
+open out,">$podpath/$prefix.rss";
+print out $t;
+close out;
+
+

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+###Download Sout-Al-Khaleej 60 minutes...
+# Takes time (seconds) as first parameter.
+
+tm=$1
+
+streamurl=http://azul.streamguys.com/sar-qatar
+prefix=sak
+podpath=/var/www/sak/
+podurl=http://192.168.1.200/sak/
+title="برنامج سوالف بيتنا البيتوتي"
+link=http://skr.fm/
+daystokeep=30
+
+dt=`date +%Y%m%d-%H:%M`
+mplayer -quiet -dumpstream -dumpfile /tmp/$prefix$dt.tmp $streamurl >/dev/null 2>/dev/null&
+PID=$!
+sleep $tm #60 minutes recording... start at 13:30 in crontab
+kill $PID
+ffmpeg -y -i /tmp/$prefix$dt.tmp  $podpath$prefix$dt.mp3 >/dev/null 2>/dev/null
+rm /tmp/$prefix$dt.tmp
+##delete files older than 30 days
+find $podpath*.mp3 -mtime +$daystokeep -exec rm {} \;
+
+#`dirname $0`/sakrss
+`dirname $0`/sakrss "$podurl" "$podpath" "$prefix" "$title" "$link"
+

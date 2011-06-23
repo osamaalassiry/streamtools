@@ -1,0 +1,10 @@
+tm=3600
+streamurl=http://azul.streamguys.com/sar-qatar
+prefix=sak
+podpath=/var/www/sak/
+podurl=http://192.168.1.200/sak/
+image=sakswalf.jpg
+format=mp3
+title="برنامج سوالف بيتنا البيتوتي"
+link=http://skr.fm/
+daystokeep=30
